@@ -76,13 +76,16 @@ public class UnityMainThreadDispatcher : MonoBehaviour
         return _instance != null;
     }
 
-    public static UnityMainThreadDispatcher Instance()
+    public static UnityMainThreadDispatcher Instance
     {
-        if (!Exists())
+        get
         {
-            throw new Exception("UnityMainThreadDispatcher could not find the UnityMainThreadDispatcher object. Please ensure you have added the MainThreadExecutor Prefab to your scene.");
+            if (!Exists())
+            {
+                throw new Exception("UnityMainThreadDispatcher could not find the UnityMainThreadDispatcher object. Please ensure you have added the MainThreadExecutor Prefab to your scene.");
+            }
+            return _instance;
         }
-        return _instance;
     }
 
 
