@@ -47,6 +47,12 @@ namespace RemoteInput.Core
             _networkController.Listen();
         }
 
+        //TODO: Delete this
+        public void SendData(object data)
+        {
+            _networkController.SendData(data);
+        }
+
         #endregion //Public Methods
 
         #region Private Methods
@@ -77,8 +83,6 @@ namespace RemoteInput.Core
             {
                 ConnectedToHost.Invoke(this, eventArgs);
             }
-
-            _networkController.SendData(new DataSample { Text = "Hello" });
         }
 
         void IObserver<ListenerAcceptedClientArgs>.OnNotified(object sender, ListenerAcceptedClientArgs eventArgs)
@@ -98,10 +102,5 @@ namespace RemoteInput.Core
         }
 
         #endregion
-    }
-
-    public struct DataSample
-    {
-        public string Text;
     }
 }

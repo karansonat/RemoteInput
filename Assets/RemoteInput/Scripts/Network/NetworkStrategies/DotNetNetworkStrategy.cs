@@ -1,5 +1,6 @@
 ﻿#if !NETFX_CORE
 
+using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -13,10 +14,11 @@ namespace RemoteInput.Core.Network
                                                            IObservable<ListenerAcceptedClientArgs>
     {
         #region Fields
-
+        
         private TcpListener _listener;
         private TcpClient _client;
         private NetworkStream _stream;
+        private Thread _serviceThread;
 
         //Events
         private event EventHandler<ListenerAcceptedClientArgs> ListenerAcceptedClient;
@@ -32,6 +34,7 @@ namespace RemoteInput.Core.Network
         public DotNetNetworkStrategy()
         {
             ListenerReceivedMessageArgs = new ListenerReceivedMessageArgs();
+            _serviceThread = new Thread(Service);
         }
 
         #endregion
@@ -41,6 +44,7 @@ namespace RemoteInput.Core.Network
             var hostName = Dns.GetHostName();
             _client = new TcpClient();
             _client.Connect(IPAddress.Parse(ipAddress), port);
+            _client.NoDelay = true;
             _stream = _client.GetStream();
             return _client.Client.RemoteEndPoint.ToString();
         }
@@ -59,9 +63,15 @@ namespace RemoteInput.Core.Network
 
         void INetworkStrategy.SendData(object data)
         {
-            var jsonString = JsonUtility.ToJson(data);
+            var jsonString = JsonConvert.SerializeObject(data);
+            Debug.Log("INetworkStrategy.SendData: " + jsonString);
             var byteMessage = Encoding.ASCII.GetBytes(jsonString);
             _stream.Write(byteMessage, 0, byteMessage.Length);
+        }
+
+        void INetworkStrategy.Suspend()
+        {
+            _serviceThread.Abort();
         }
 
         #region Private Methods
@@ -82,6 +92,7 @@ namespace RemoteInput.Core.Network
         private void Service()
         {
             _client = _listener.AcceptTcpClient();
+            _listener.Stop();
             _stream = _client.GetStream();
 
             (this as IObservable<ListenerAcceptedClientArgs>).Notify(
@@ -93,13 +104,18 @@ namespace RemoteInput.Core.Network
             byte[] bytes = new byte[1024];
             while (true)
             {
-                NetworkStream stream = _client.GetStream();
-                var byteStream = stream.Read(bytes, 0, bytes.Length);
+                var byteStream = _stream.Read(bytes, 0, bytes.Length);
                 var json = Encoding.ASCII.GetString(bytes, 0, byteStream);
-                var data = JsonUtility.FromJson<DataSample>(json);
-                ListenerReceivedMessageArgs.StreamMessage = data.Text;
-                Debug.Log("Message Received");
-                (this as IObservable<ListenerReceivedMessageArgs>).Notify(ListenerReceivedMessageArgs);
+                try
+                {
+                    var data = JsonConvert.DeserializeObject<InputData>(json);
+                    ListenerReceivedMessageArgs.StreamMessage = data;
+                    (this as IObservable<ListenerReceivedMessageArgs>).Notify(ListenerReceivedMessageArgs);
+                }
+                catch (Exception)
+                {
+                    Debug.Log("Shitty json");
+                }
             }
         }
 
@@ -146,4 +162,5 @@ namespace RemoteInput.Core.Network
         #endregion //IObservable Interface
     }
 }
+
 #endif
