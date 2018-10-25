@@ -1,6 +1,9 @@
 ﻿using System;
 
-public class ClientConnectedArgs : EventArgs
+namespace RemoteInput.Core.Network
 {
-    public string RemoteEndPoint { get; set; }
+    public class ClientConnectedArgs : EventArgs
+    {
+        public string RemoteEndPoint { get; set; }
+    }
 }

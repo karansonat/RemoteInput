@@ -1,6 +1,9 @@
 ﻿using System;
 
-public class ListenerReceivedMessageArgs : EventArgs
+namespace RemoteInput.Core.Network
 {
-    public object StreamMessage { get; set; }
+    public class ListenerReceivedMessageArgs : EventArgs
+    {
+        public object StreamMessage { get; set; }
+    }
 }
