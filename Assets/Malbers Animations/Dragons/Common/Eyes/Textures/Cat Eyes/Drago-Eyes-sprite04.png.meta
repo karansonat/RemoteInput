@@ -1,0 +1,190 @@
+fileFormatVersion: 2
+guid: 2391f431ee01d4047a54cf9effe72476
+timeCreated: 1466106123
+licenseType: Store
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Drago-Eyes-sprite04_0
+    21300002: Drago-Eyes-sprite04_1
+    21300004: Drago-Eyes-sprite04_2
+    21300006: Drago-Eyes-sprite04_3
+    21300008: Drago-Eyes-sprite04_4
+    21300010: Drago-Eyes-sprite04_5
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: Drago-Eyes-sprite04_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 341
+        width: 341.33334
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 91, y: 57.5}
+        - {x: 35, y: 95.5}
+        - {x: -24, y: 95.5}
+        - {x: -66, y: 83.5}
+        - {x: -96, y: 40.5}
+        - {x: -96, y: -42.5}
+        - {x: -47, y: -88.5}
+        - {x: 38, y: -88.5}
+        - {x: 90, y: -48.5}
+        - {x: 94, y: -34.5}
+        - {x: 94, y: 37.5}
+    - name: Drago-Eyes-sprite04_1
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 341
+        width: 341.33334
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 49, y: 68.5}
+        - {x: -29, y: 68.5}
+        - {x: -86, y: 23.5}
+        - {x: -86, y: -45.5}
+        - {x: -49, y: -54.5}
+        - {x: 48, y: -54.5}
+        - {x: 87, y: -14.5}
+        - {x: 93, y: -0.5}
+        - {x: 93, y: 31.5}
+    - name: Drago-Eyes-sprite04_2
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 341
+        width: 341.33334
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -10, y: 52.5}
+        - {x: -45, y: 46.5}
+        - {x: -86, y: -15.5}
+        - {x: -86, y: -35.5}
+        - {x: 18, y: -35.5}
+        - {x: 71, y: -29.5}
+        - {x: 93, y: 0.5}
+        - {x: 93, y: 33.5}
+        - {x: 56, y: 52.5}
+    - name: Drago-Eyes-sprite04_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 341.33334
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -47, y: -51.5}
+        - {x: -46, y: -54.5}
+        - {x: -43, y: -54.5}
+        - {x: -41, y: -52.5}
+        - {x: -42, y: -49.5}
+        - {x: -45, y: -49.5}
+      - - {x: -11, y: 40.5}
+        - {x: -82, y: 2.5}
+        - {x: -82, y: -34.5}
+        - {x: -25, y: -34.5}
+        - {x: 93, y: 7.5}
+        - {x: 93, y: 24.5}
+        - {x: 72, y: 40.5}
+      - - {x: 35, y: -20.5}
+        - {x: 35, y: -21.5}
+        - {x: 37, y: -23.5}
+        - {x: 38, y: -23.5}
+        - {x: 41, y: -20.5}
+        - {x: 41, y: -18.5}
+        - {x: 38, y: -17.5}
+    - name: Drago-Eyes-sprite04_4
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 0
+        width: 341.33334
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -87, y: -35.5}
+        - {x: -38, y: -35.5}
+        - {x: 93, y: 0.5}
+        - {x: 93, y: 31.5}
+        - {x: 38, y: 31.5}
+        - {x: -87, y: -2.5}
+    - name: Drago-Eyes-sprite04_5
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 0
+        width: 341.33334
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -87, y: -35.5}
+        - {x: -38, y: -35.5}
+        - {x: 93, y: 0.5}
+        - {x: 93, y: 31.5}
+        - {x: 38, y: 31.5}
+        - {x: -87, y: -2.5}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
