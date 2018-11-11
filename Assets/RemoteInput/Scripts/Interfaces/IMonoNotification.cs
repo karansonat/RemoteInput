@@ -1,4 +1,4 @@
-﻿namespace Game.Core
+﻿namespace RemoteInput.Core
 {
     public interface IMonoNotification
     {

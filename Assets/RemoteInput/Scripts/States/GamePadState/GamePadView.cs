@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace RemoteInput.Core
 {
-    public class GamePadView : MonoBehaviour
+    public class GamePadView : MonoBehaviour, IObservable<DisconnectButtonPressedArgs>
     {
         #region Fields
 
@@ -15,11 +16,16 @@ namespace RemoteInput.Core
         public Vector2 Joystick { get; private set; }
         public bool ButtonAPressed { get; private set; }
         public bool ButtonBPressed { get; private set; }
-        public bool ButtonDisconnectPressed { get; private set; }
 
         private bool _initialized;
 
         #endregion //Fields
+
+        #region Events
+
+        private event EventHandler<DisconnectButtonPressedArgs> _disconnectButtonPressed;
+
+        #endregion
 
         #region Public Methods
 
@@ -47,7 +53,6 @@ namespace RemoteInput.Core
         {
             ButtonAPressed = false;
             ButtonBPressed = false;
-            ButtonDisconnectPressed = false;
         }
 
         #endregion //Public Methods
@@ -66,7 +71,7 @@ namespace RemoteInput.Core
 
         private void OnButtonDisconnectPressed()
         {
-            ButtonDisconnectPressed = true;
+            (this as IObservable<DisconnectButtonPressedArgs>).Notify(null);
         }
 
         private void OnJoystickUpdated()
@@ -75,5 +80,27 @@ namespace RemoteInput.Core
         }
 
         #endregion //Private Methods
+
+        #region IObservable Interface
+
+        void IObservable<DisconnectButtonPressedArgs>.Attach(IObserver<DisconnectButtonPressedArgs> observer)
+        {
+            _disconnectButtonPressed += observer.OnNotified;
+        }
+
+        void IObservable<DisconnectButtonPressedArgs>.Detach(IObserver<DisconnectButtonPressedArgs> observer)
+        {
+            _disconnectButtonPressed -= observer.OnNotified;
+        }
+
+        void IObservable<DisconnectButtonPressedArgs>.Notify(DisconnectButtonPressedArgs eventArgs)
+        {
+            if (_disconnectButtonPressed != null)
+            {
+                _disconnectButtonPressed.Invoke(this, eventArgs);
+            }
+        }
+
+        #endregion //IObservable Interface
     }
 }

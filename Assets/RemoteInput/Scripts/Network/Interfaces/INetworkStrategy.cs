@@ -18,7 +18,21 @@ namespace RemoteInput.Core.Network
         /// <param name="port"></param>
         /// <returns>returns client end point</returns>
         string Connect(string ipAddress, int port);
+
+        /// <summary>
+        /// Serialize data and send to cliet
+        /// </summary>
+        /// <param name="data"></param>
         void SendData(object data);
+
+        /// <summary>
+        /// Close port
+        /// </summary>
         void Suspend();
+
+        /// <summary>
+        /// End connection
+        /// </summary>
+        void Disconnect();
     }
 }

@@ -1,19 +1,34 @@
 ﻿using System;
-using Game.Core;
 using RemoteInput.Core.Network;
+using UnityEngine;
 
 namespace RemoteInput.Core
 {
-    public class RemoteInputController : IMonoNotification, IObserver<ListenerStartedArgs>,
-                                                            IObserver<ClientConnectedArgs>,
-                                                            IObserver<ListenerAcceptedClientArgs>,
-                                                            IObserver<ListenerReceivedMessageArgs>,
-                                                            IObserver<GamePadParametersUpdatedArgs>
+    public enum RemoteControllerMode
+    {
+        Host,
+        Controller
+    }
+
+    public class RemoteInputController : MonoBehaviour, IObserver<ListenerStartedArgs>,         IObservable<ListenerStartedArgs>,
+                                                        IObserver<ClientConnectedArgs>,         IObservable<ClientConnectedArgs>,
+                                                        IObserver<ListenerAcceptedClientArgs>,  IObservable<ListenerAcceptedClientArgs>,
+                                                        IObserver<ListenerReceivedMessageArgs>, IObservable<ListenerReceivedMessageArgs>,
+                                                        IObserver<GamePadParametersUpdatedArgs>,
+                                                        IObserver<ListenButtonPressedArgs>,
+                                                        IObserver<ConnectButtonPressedArgs>,
+                                                        IObserver<DisconnectButtonPressedArgs>
     {
         #region Fields
 
+        [SerializeField] private RemoteControllerMode _mode;
+        public RemoteControllerMode Mode
+        {
+            get { return _mode; }
+        }
+
         private NetworkController _networkController;
-        private GamePadController _gamePadController;
+        private StateController _stateController;
 
         #endregion //Fields
 
@@ -26,50 +41,36 @@ namespace RemoteInput.Core
 
         #endregion
 
-        #region Constructor
+        #region Unity Methods
 
-        public RemoteInputController()
+        void Awake()
         {
             _networkController = new NetworkController();
+            _stateController = new StateController();
 
-            SubscribeEvents();            
+            _stateController.Init();
+            SubscribeEvents();
         }
 
-        #endregion
-
-        #region IMonoNotification
-
-        void IMonoNotification.FixedUpdate()
+        void FixedUpdate()
         {
+            if (_stateController != null)
+                (_stateController as IMonoNotification).FixedUpdate();
         }
 
-        void IMonoNotification.Update()
+        void Update()
         {
-            if (_gamePadController != null)
-                (_gamePadController as IMonoNotification).Update();
+            if (_stateController != null)
+                (_stateController as IMonoNotification).Update();
         }
 
-        void IMonoNotification.LateUpdate()
+        void LateUpdate()
         {
-            if (_gamePadController != null)
-                (_gamePadController as IMonoNotification).LateUpdate();
+            if (_stateController != null)
+                (_stateController as IMonoNotification).LateUpdate();
         }
 
-        #endregion //IMonoNotification
-
-        #region Public Methods
-
-        public void Connect(string ipAddress)
-        {
-            _networkController.Connect(ipAddress);
-        }
-
-        public void Listen()
-        {
-            _networkController.Listen();
-        }
-
-        #endregion //Public Methods
+        #endregion Unity Methods
 
         #region Private Methods
 
@@ -79,16 +80,16 @@ namespace RemoteInput.Core
             (_networkController as IObservable<ClientConnectedArgs>).Attach(this as IObserver<ClientConnectedArgs>);
             (_networkController as IObservable<ListenerAcceptedClientArgs>).Attach(this as IObserver<ListenerAcceptedClientArgs>);
             (_networkController as IObservable<ListenerReceivedMessageArgs>).Attach(this as IObserver<ListenerReceivedMessageArgs>);
-        }
 
-        private void ConfigureGamePadController()
-        {
-            var model = GamePadFactory.Instance.CreateGamePadModel();
-            var view = GamePadFactory.Instance.CreateGamePadView();
-            _gamePadController = GamePadFactory.Instance.CreateGamePadController(model, view);
-            _gamePadController.Init();
+            (_stateController as IObservable<GamePadParametersUpdatedArgs>).Attach(this);
+            (_stateController as IObservable<ListenButtonPressedArgs>).Attach(this);
+            (_stateController as IObservable<ConnectButtonPressedArgs>).Attach(this);
+            (_stateController as IObservable<DisconnectButtonPressedArgs>).Attach(this);
 
-            (_gamePadController as IObservable<GamePadParametersUpdatedArgs>).Attach(this as IObserver<GamePadParametersUpdatedArgs>);
+            (this as IObservable<ListenerStartedArgs>).Attach(_stateController);
+            (this as IObservable<ClientConnectedArgs>).Attach(_stateController);
+            (this as IObservable<ListenerAcceptedClientArgs>).Attach(_stateController);
+            (this as IObservable<ListenerReceivedMessageArgs>).Attach(_stateController);
         }
 
         #endregion
@@ -110,7 +111,7 @@ namespace RemoteInput.Core
                 ConnectedToHost.Invoke(this, eventArgs);
             }
 
-            ConfigureGamePadController();
+            _stateController.SwitchState(StateType.GamePadState);
         }
 
         void IObserver<ListenerAcceptedClientArgs>.OnNotified(object sender, ListenerAcceptedClientArgs eventArgs)
@@ -134,6 +135,97 @@ namespace RemoteInput.Core
             _networkController.SendData(eventArgs.GamePad);
         }
 
+        void IObserver<ListenButtonPressedArgs>.OnNotified(object sender, ListenButtonPressedArgs eventArgs)
+        {
+            _networkController.Listen();
+        }
+
+        void IObserver<ConnectButtonPressedArgs>.OnNotified(object sender, ConnectButtonPressedArgs eventArgs)
+        {
+            _networkController.Connect(eventArgs.IpAddress);
+        }
+
+        void IObserver<DisconnectButtonPressedArgs>.OnNotified(object sender, DisconnectButtonPressedArgs eventArgs)
+        {
+            _networkController.Disconnect();
+        }
+
         #endregion
+
+        #region IObservable Interface
+
+        void IObservable<ListenerStartedArgs>.Attach(IObserver<ListenerStartedArgs> observer)
+        {
+            ReadyForConnection += observer.OnNotified;
+        }
+
+        void IObservable<ListenerStartedArgs>.Detach(IObserver<ListenerStartedArgs> observer)
+        {
+            ReadyForConnection -= observer.OnNotified;
+        }
+
+        void IObservable<ListenerStartedArgs>.Notify(ListenerStartedArgs eventArgs)
+        {
+            if (ReadyForConnection != null)
+            {
+                ReadyForConnection.Invoke(this, eventArgs);
+            }
+        }
+
+        void IObservable<ClientConnectedArgs>.Attach(IObserver<ClientConnectedArgs> observer)
+        {
+            ConnectedToHost += observer.OnNotified;
+        }
+
+        void IObservable<ClientConnectedArgs>.Detach(IObserver<ClientConnectedArgs> observer)
+        {
+            ConnectedToHost -= observer.OnNotified;
+        }
+
+        void IObservable<ClientConnectedArgs>.Notify(ClientConnectedArgs eventArgs)
+        {
+            if (ConnectedToHost != null)
+            {
+                ConnectedToHost.Invoke(this, eventArgs);
+            }
+        }
+
+        void IObservable<ListenerAcceptedClientArgs>.Attach(IObserver<ListenerAcceptedClientArgs> observer)
+        {
+            ControllerConnected += observer.OnNotified;
+        }
+
+        void IObservable<ListenerAcceptedClientArgs>.Detach(IObserver<ListenerAcceptedClientArgs> observer)
+        {
+            ControllerConnected -= observer.OnNotified;
+        }
+
+        void IObservable<ListenerAcceptedClientArgs>.Notify(ListenerAcceptedClientArgs eventArgs)
+        {
+            if (ControllerConnected != null)
+            {
+                ControllerConnected.Invoke(this, eventArgs);
+            }
+        }
+
+        void IObservable<ListenerReceivedMessageArgs>.Attach(IObserver<ListenerReceivedMessageArgs> observer)
+        {
+            InputDataReceived += observer.OnNotified;
+        }
+
+        void IObservable<ListenerReceivedMessageArgs>.Detach(IObserver<ListenerReceivedMessageArgs> observer)
+        {
+            InputDataReceived -= observer.OnNotified;
+        }
+
+        void IObservable<ListenerReceivedMessageArgs>.Notify(ListenerReceivedMessageArgs eventArgs)
+        {
+            if (InputDataReceived != null)
+            {
+                InputDataReceived.Invoke(this, eventArgs);
+            }
+        }
+
+        #endregion //IObservable Interface
     }
 }

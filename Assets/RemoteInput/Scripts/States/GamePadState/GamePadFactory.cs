@@ -29,20 +29,20 @@ namespace RemoteInput.Core
 
         #region Factory Methods
 
-        public GamePad CreateGamePadModel()
+        public GamePad CreateModel()
         {
             return new GamePad();
         }
 
-        public GamePadView CreateGamePadView()
+        public GamePadView CreateView()
         {
             var viewPrefab = Resources.Load<GameObject>("GamePad/GamePadView");
             return Object.Instantiate(viewPrefab).GetComponent<GamePadView>();
         }
 
-        public GamePadController CreateGamePadController(GamePad model, GamePadView view)
+        public GamePadState CreateController(GamePad model, GamePadView view)
         {
-            return new GamePadController(model, view);
+            return new GamePadState(model, view);
         }
 
         #endregion

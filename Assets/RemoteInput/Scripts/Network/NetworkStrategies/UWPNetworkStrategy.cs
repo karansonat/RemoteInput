@@ -27,5 +27,10 @@ namespace RemoteInput.Core.Network
         {
             throw new NotImplementedException();
         }
+
+        void INetworkStrategy.Disconnect()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -45,6 +45,16 @@
             _networkStrategy.SendData(data);
         }
 
+        public virtual void Disconnect()
+        {
+            _networkStrategy.Disconnect();
+        }
+
+        public virtual void Suspend()
+        {
+            _networkStrategy.Suspend();
+        }
+
         #endregion //Public Methods
 
         #region Constructor

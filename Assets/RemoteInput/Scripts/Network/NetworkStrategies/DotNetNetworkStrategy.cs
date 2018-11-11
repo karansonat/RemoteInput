@@ -73,6 +73,11 @@ namespace RemoteInput.Core.Network
             _serviceThread.Abort();
         }
 
+        void INetworkStrategy.Disconnect()
+        {
+            throw new NotImplementedException();
+        }
+
         #region Private Methods
 
         private string GetLocalIPAddress()
