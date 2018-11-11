@@ -38,7 +38,7 @@ namespace Game.Core
 
             #endregion //Singleton
 
-            Application.runInBackground = true;
+            ApplyApplicationConfiguration();
 
             _inputController = new RemoteInputController();
 
@@ -47,7 +47,7 @@ namespace Game.Core
                 SubscribeHostEvents();
                 _inputController.Listen();
             });
-
+            
             _connectButton.onClick.AddListener(() =>
             {
                 SubscribeControllerEvents();
@@ -57,12 +57,12 @@ namespace Game.Core
 
         private void Update()
         {
-            //Dummy data
-            if (_sendData)
-            {
-                var data = new InputData {EulerAngles = Input.gyro.attitude.eulerAngles, Acceleration = Input.acceleration };
-                _inputController.SendData(data);
-            }
+            (_inputController as IMonoNotification).Update();
+        }
+
+        private void LateUpdate()
+        {
+            (_inputController as IMonoNotification).LateUpdate();
         }
 
         #endregion //Unity Methods
@@ -79,6 +79,17 @@ namespace Game.Core
         private void SubscribeControllerEvents()
         {
             _inputController.ConnectedToHost += RemoteInputController_ConnectedToHost;
+        }
+
+        private void ApplyApplicationConfiguration()
+        {
+            Application.runInBackground = true;
+            Application.targetFrameRate = 60;
+        }
+
+        private void BeginSendData()
+        {
+            _sendData = true;
         }
 
         #endregion //Private Methods
@@ -106,10 +117,25 @@ namespace Game.Core
         {
             UnityMainThreadDispatcher.Instance.Enqueue(() =>
             {
-                var inputData = e.StreamMessage as InputData;
-                var message = string.Format("EulerAngles: {0}, Acceleration: {1}", inputData.EulerAngles, inputData.Acceleration);
-                Debug.Log(message);
+                string message = "";
+                try
+                {
+                    var gamepad = JsonUtility.FromJson<GamePad>(e.StreamMessage);
+                    message = "Joystick: " + gamepad.Joystick.ToString()
+                    + System.Environment.NewLine
+                    + "Button A: " + (gamepad.ButtonA ? "Pressed" : "")
+                    + System.Environment.NewLine
+                    + "Button B: " + (gamepad.ButtonB ? "Pressed" : "");
+                    Debug.Log(gamepad.ToString());
+                }
+                catch (System.Exception)
+                {
+                    message = "Shitty Json";
+                }
+
                 _statusText.text = message;
+                Debug.Log(e.StreamMessage);
+                
             });
         }
 
@@ -123,9 +149,13 @@ namespace Game.Core
             Debug.Log(message);
             _statusText.text = message;
 
-            _sendData = true;
-            //Enabled gyroscope
-            Input.gyro.enabled = true;
+            BeginSendData();
+
+            //TODO: Convert application into state machine
+            Destroy(GameObject.Find("Canvas"));
+#if !UNITY_EDITOR && (UNITY_IOS || UNITY_ANDROID)
+            Screen.orientation = ScreenOrientation.LandscapeLeft;
+#endif
         }
 
         #endregion //RemoteInputController Controller Events

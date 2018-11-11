@@ -1,6 +1,5 @@
 ﻿#if !NETFX_CORE
 
-using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -63,7 +62,7 @@ namespace RemoteInput.Core.Network
 
         void INetworkStrategy.SendData(object data)
         {
-            var jsonString = JsonConvert.SerializeObject(data);
+            var jsonString = JsonUtility.ToJson(data);
             Debug.Log("INetworkStrategy.SendData: " + jsonString);
             var byteMessage = Encoding.ASCII.GetBytes(jsonString);
             _stream.Write(byteMessage, 0, byteMessage.Length);
@@ -106,16 +105,8 @@ namespace RemoteInput.Core.Network
             {
                 var byteStream = _stream.Read(bytes, 0, bytes.Length);
                 var json = Encoding.ASCII.GetString(bytes, 0, byteStream);
-                try
-                {
-                    var data = JsonConvert.DeserializeObject<InputData>(json);
-                    ListenerReceivedMessageArgs.StreamMessage = data;
-                    (this as IObservable<ListenerReceivedMessageArgs>).Notify(ListenerReceivedMessageArgs);
-                }
-                catch (Exception)
-                {
-                    Debug.Log("Shitty json");
-                }
+                ListenerReceivedMessageArgs.StreamMessage = json;
+                (this as IObservable<ListenerReceivedMessageArgs>).Notify(ListenerReceivedMessageArgs);
             }
         }
 

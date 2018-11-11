@@ -4,6 +4,6 @@ namespace RemoteInput.Core.Network
 {
     public class ListenerReceivedMessageArgs : EventArgs
     {
-        public object StreamMessage { get; set; }
+        public string StreamMessage { get; set; }
     }
 }
