@@ -13,7 +13,7 @@ namespace RemoteInput.Core
         [SerializeField] private Button _buttonB;
         [SerializeField] private Button _buttonDisconnect;
 
-        public Vector2 Joystick { get; private set; }
+        public Vector3 InputVector { get; private set; }
         public bool ButtonAPressed { get; private set; }
         public bool ButtonBPressed { get; private set; }
 
@@ -76,7 +76,7 @@ namespace RemoteInput.Core
 
         private void OnJoystickUpdated()
         {
-            Joystick = new Vector2(_joystick.Horizontal, _joystick.Vertical);
+            InputVector = _joystick.InputVector;
         }
 
         #endregion //Private Methods

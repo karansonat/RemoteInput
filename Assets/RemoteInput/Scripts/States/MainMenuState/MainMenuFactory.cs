@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace RemoteInput.Core
 {
@@ -36,7 +34,10 @@ namespace RemoteInput.Core
 
         public MainMenuView CreateView()
         {
-            var viewPrefab = Resources.Load<GameObject>("MainMenu/MainMenuView");
+            var resourceName = RemoteInputController.Instance.Mode == RemoteControllerMode.Host 
+                ? "MainMenu/MainMenuHostView"
+                : "MainMenu/MainMenuControllerView";
+            var viewPrefab = Resources.Load<GameObject>(resourceName);
             return Object.Instantiate(viewPrefab).GetComponent<MainMenuView>();
         }
 

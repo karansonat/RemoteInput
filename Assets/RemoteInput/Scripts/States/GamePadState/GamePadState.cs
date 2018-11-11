@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RemoteInput.Core
 {
@@ -81,7 +82,7 @@ namespace RemoteInput.Core
 
         private void UpdateGamePadParameters()
         {
-            _model.SetData(_view.Joystick, _view.ButtonAPressed, _view.ButtonBPressed);
+            _model.SetData(_view.InputVector, _view.ButtonAPressed, _view.ButtonBPressed);
             _gamePadParametersUpdatedArgs.GamePad = _model;
         }
 

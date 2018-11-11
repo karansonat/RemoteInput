@@ -63,7 +63,6 @@ namespace RemoteInput.Core.Network
         void INetworkStrategy.SendData(object data)
         {
             var jsonString = JsonUtility.ToJson(data);
-            Debug.Log("INetworkStrategy.SendData: " + jsonString);
             var byteMessage = Encoding.ASCII.GetBytes(jsonString);
             _stream.Write(byteMessage, 0, byteMessage.Length);
         }

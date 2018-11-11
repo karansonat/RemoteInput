@@ -138,7 +138,7 @@ namespace RemoteInput.Core
                 try
                 {
                     var gamepad = JsonUtility.FromJson<GamePad>(eventArgs.StreamMessage);
-                    message = "Joystick: " + gamepad.Joystick.ToString()
+                    message = "Joystick: " + gamepad.InputVector.ToString()
                     + Environment.NewLine
                     + "Button A: " + (gamepad.ButtonA ? "Pressed" : "")
                     + Environment.NewLine

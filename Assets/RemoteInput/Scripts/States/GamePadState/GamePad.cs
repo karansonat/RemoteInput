@@ -12,8 +12,8 @@ namespace RemoteInput.Core
         [SerializeField] private Vector3 _acceleration;
         public Vector3 Acceleration { get { return _acceleration; } }
         
-        [SerializeField] private Vector2 _joystick;
-        public Vector2 Joystick { get { return _joystick; } }
+        [SerializeField] private Vector3 _inputVector;
+        public Vector3 InputVector { get { return _inputVector; } }
         
         [SerializeField] private bool _buttonA;
         public bool ButtonA { get { return _buttonA; } }
@@ -30,18 +30,18 @@ namespace RemoteInput.Core
             Input.gyro.enabled = true;
         }
 
-        public void SetData(Vector2 joystick, bool buttonA, bool buttonB)
+        public void SetData(Vector3 inputVector, bool buttonA, bool buttonB)
         {
             RefreshSensorDatas();
 
-            _joystick = joystick;
+            _inputVector = inputVector;
             _buttonA = buttonA;
             _buttonB = buttonB;
         }
 
         public override string ToString()
         {
-            return "Joystick: " + Joystick.ToString()
+            return "InputVector: " + InputVector.ToString()
                     + " - "
                     + "Button A: " + (ButtonA ? "Pressed" : "")
                     + " - "

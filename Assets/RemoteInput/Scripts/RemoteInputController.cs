@@ -27,8 +27,11 @@ namespace RemoteInput.Core
             get { return _mode; }
         }
 
+        public static RemoteInputController Instance { get; private set; }
+
         private NetworkController _networkController;
         private StateController _stateController;
+        private InputDataReceivedArgs _inputDataReceivedArgs;
 
         #endregion //Fields
 
@@ -37,7 +40,8 @@ namespace RemoteInput.Core
         public event EventHandler<ListenerStartedArgs> ReadyForConnection;
         public event EventHandler<ClientConnectedArgs> ConnectedToHost;
         public event EventHandler<ListenerAcceptedClientArgs> ControllerConnected;
-        public event EventHandler<ListenerReceivedMessageArgs> InputDataReceived;
+        public event EventHandler<InputDataReceivedArgs> InputDataReceived;
+        private event EventHandler<ListenerReceivedMessageArgs> _listenerReceivedMessage;
 
         #endregion
 
@@ -45,8 +49,22 @@ namespace RemoteInput.Core
 
         void Awake()
         {
+            #region Singleton
+
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else if (Instance != this)
+            {
+                Destroy(Instance.gameObject);
+            }
+
+            #endregion //Singleton
+
             _networkController = new NetworkController();
             _stateController = new StateController();
+            _inputDataReceivedArgs = new InputDataReceivedArgs();
 
             _stateController.Init();
             SubscribeEvents();
@@ -124,9 +142,17 @@ namespace RemoteInput.Core
 
         void IObserver<ListenerReceivedMessageArgs>.OnNotified(object sender, ListenerReceivedMessageArgs eventArgs)
         {
+            if (_listenerReceivedMessage != null)
+            {
+                _listenerReceivedMessage.Invoke(this, eventArgs);
+            }
+
+            var gamepad = JsonUtility.FromJson<GamePad>(eventArgs.StreamMessage);
+            _inputDataReceivedArgs.GamePadData = gamepad;
+
             if (InputDataReceived != null)
             {
-                InputDataReceived.Invoke(this, eventArgs);
+                InputDataReceived.Invoke(this, _inputDataReceivedArgs);
             }
         }
 
@@ -210,19 +236,19 @@ namespace RemoteInput.Core
 
         void IObservable<ListenerReceivedMessageArgs>.Attach(IObserver<ListenerReceivedMessageArgs> observer)
         {
-            InputDataReceived += observer.OnNotified;
+            _listenerReceivedMessage += observer.OnNotified;
         }
 
         void IObservable<ListenerReceivedMessageArgs>.Detach(IObserver<ListenerReceivedMessageArgs> observer)
         {
-            InputDataReceived -= observer.OnNotified;
+            _listenerReceivedMessage -= observer.OnNotified;
         }
 
         void IObservable<ListenerReceivedMessageArgs>.Notify(ListenerReceivedMessageArgs eventArgs)
         {
-            if (InputDataReceived != null)
+            if (_listenerReceivedMessage != null)
             {
-                InputDataReceived.Invoke(this, eventArgs);
+                _listenerReceivedMessage.Invoke(this, eventArgs);
             }
         }
 

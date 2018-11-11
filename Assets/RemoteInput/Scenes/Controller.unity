@@ -152,6 +152,15 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 114575922907126376, guid: 274d729f8c7e61243a3106ba7d74b3ec,
+        type: 2}
+      propertyPath: _mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747205766093564, guid: 274d729f8c7e61243a3106ba7d74b3ec, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 274d729f8c7e61243a3106ba7d74b3ec, type: 2}
   m_IsPrefabParent: 0
@@ -385,3 +394,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inputController: {fileID: 636467247}
+  _dragon: {fileID: 0}

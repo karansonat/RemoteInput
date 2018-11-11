@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/Scenes/Main.unity
+  - enabled: 0
+    path: Assets/RemoteInput/Scenes/Controller.unity
     guid: 64fbbaeaaa8d5cf4d8ff0b6ef81ee55c
+  - enabled: 1
+    path: Assets/RemoteInput/Scenes/Game.unity
+    guid: 62dc03caed3bf8e4facec6a6500c06dd
