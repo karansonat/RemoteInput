@@ -61,11 +61,13 @@
 
         public NetworkController()
         {
-#if NETFX_CORE
-            _networkStrategy = NetworkStrategyFactory.Instance.CreateUWPworkStrategy();
-#else
             _networkStrategy = NetworkStrategyFactory.Instance.CreateDotNetworkStrategy();
-#endif
+
+//#if NETFX_CORE
+//            _networkStrategy = NetworkStrategyFactory.Instance.CreateUWPworkStrategy();
+//#else
+//            _networkStrategy = NetworkStrategyFactory.Instance.CreateDotNetworkStrategy();
+//#endif
             ListenerStartedArgs = new ListenerStartedArgs();
             ClientConnectedArgs = new ClientConnectedArgs();
         }

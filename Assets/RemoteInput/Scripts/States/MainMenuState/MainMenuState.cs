@@ -48,7 +48,9 @@ namespace RemoteInput.Core
         {
             UnsubscribeEvents();
 
-            UnityEngine.Object.Destroy(_view.gameObject);
+            if (RemoteInputController.Instance.Mode == RemoteControllerMode.Controller)
+                UnityEngine.Object.Destroy(_view.gameObject);
+
             UnityEngine.Object.Destroy(_model);
         }
 
@@ -77,20 +79,20 @@ namespace RemoteInput.Core
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_ANDROID)
             Screen.orientation = ScreenOrientation.Portrait;
 #endif
-
-            _view.Init();
+            if (RemoteInputController.Instance.Mode == RemoteControllerMode.Controller)
+                _view.Init();
         }
 
         private void SubscribeEvents()
         {
-            (_view as IObservable<ListenButtonPressedArgs>).Attach(this);
-            (_view as IObservable<ConnectButtonPressedArgs>).Attach(this);
+            if (RemoteInputController.Instance.Mode == RemoteControllerMode.Controller)
+                (_view as IObservable<ConnectButtonPressedArgs>).Attach(this);
         }
 
         private void UnsubscribeEvents()
         {
-            (_view as IObservable<ListenButtonPressedArgs>).Detach(this);
-            (_view as IObservable<ConnectButtonPressedArgs>).Detach(this);
+            if (RemoteInputController.Instance.Mode == RemoteControllerMode.Controller)
+                (_view as IObservable<ConnectButtonPressedArgs>).Detach(this);
         }
 
         #endregion //Private Methods
@@ -99,7 +101,7 @@ namespace RemoteInput.Core
 
         void IObserver<ListenButtonPressedArgs>.OnNotified(object sender, ListenButtonPressedArgs eventArgs)
         {
-            (this as IObservable<ListenButtonPressedArgs>).Notify(eventArgs);
+            //(this as IObservable<ListenButtonPressedArgs>).Notify(eventArgs);
         }
 
         void IObserver<ConnectButtonPressedArgs>.OnNotified(object sender, ConnectButtonPressedArgs eventArgs)
@@ -109,8 +111,8 @@ namespace RemoteInput.Core
 
         void IObserver<ListenerStartedArgs>.OnNotified(object sender, ListenerStartedArgs eventArgs)
         {
-            var message = string.Format("Ready for connection at {0}", eventArgs.LocalEndPoint);
-            _view.UpdateStatus(message);
+            //var message = string.Format("Ready for connection at {0}", eventArgs.LocalEndPoint);
+            //_view.UpdateStatus(message);
         }
 
         void IObserver<ClientConnectedArgs>.OnNotified(object sender, ClientConnectedArgs eventArgs)
@@ -121,36 +123,36 @@ namespace RemoteInput.Core
 
         void IObserver<ListenerAcceptedClientArgs>.OnNotified(object sender, ListenerAcceptedClientArgs eventArgs)
         {
-            UnityMainThreadDispatcher.Instance.Enqueue(() =>
-            {
-                var message = string.Format("Remote Controller Connected from {0}", eventArgs.ClientEndPoint);
-                _view.UpdateStatus(message);
-                _view.gameObject.SetActive(false);
-            });
+            //UnityMainThreadDispatcher.Instance.Enqueue(() =>
+            //{
+            //    var message = string.Format("Remote Controller Connected from {0}", eventArgs.ClientEndPoint);
+            //    _view.UpdateStatus(message);
+            //    _view.gameObject.SetActive(false);
+            //});
         }
 
         void IObserver<ListenerReceivedMessageArgs>.OnNotified(object sender, ListenerReceivedMessageArgs eventArgs)
         {
-            UnityMainThreadDispatcher.Instance.Enqueue(() =>
-            {
-                string message = "";
-
-                try
-                {
-                    var gamepad = JsonUtility.FromJson<GamePad>(eventArgs.StreamMessage);
-                    message = "Joystick: " + gamepad.InputVector.ToString()
-                    + Environment.NewLine
-                    + "Button A: " + (gamepad.ButtonA ? "Pressed" : "")
-                    + Environment.NewLine
-                    + "Button B: " + (gamepad.ButtonB ? "Pressed" : "");
-                }
-                catch (Exception)
-                {
-                    message = "Shitty Json";
-                }
-
-                _view.UpdateStatus(message);
-            });
+            //UnityMainThreadDispatcher.Instance.Enqueue(() =>
+            //{
+            //    string message = "";
+            //
+            //    try
+            //    {
+            //        var gamepad = JsonUtility.FromJson<GamePad>(eventArgs.StreamMessage);
+            //        message = "Joystick: " + gamepad.InputVector.ToString()
+            //        + Environment.NewLine
+            //        + "Button A: " + (gamepad.ButtonA ? "Pressed" : "")
+            //        + Environment.NewLine
+            //        + "Button B: " + (gamepad.ButtonB ? "Pressed" : "");
+            //    }
+            //    catch (Exception)
+            //    {
+            //        message = "Shitty Json";
+            //    }
+            //
+            //    _view.UpdateStatus(message);
+            //});
         }
 
         #endregion //IObserver Interface

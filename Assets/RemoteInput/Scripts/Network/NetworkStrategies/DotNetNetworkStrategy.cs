@@ -1,6 +1,7 @@
-﻿#if !NETFX_CORE
+﻿#if true
 
 using System;
+using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -104,13 +105,21 @@ namespace RemoteInput.Core.Network
                     ClientEndPoint = ((IPEndPoint)_client.Client.RemoteEndPoint).Address.ToString()
                 });
 
-            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[2048];
             while (true)
             {
-                var byteStream = _stream.Read(bytes, 0, bytes.Length);
-                var json = Encoding.ASCII.GetString(bytes, 0, byteStream);
-                ListenerReceivedMessageArgs.StreamMessage = json;
-                (this as IObservable<ListenerReceivedMessageArgs>).Notify(ListenerReceivedMessageArgs);
+                try
+                {
+                    var byteStream = _stream.Read(bytes, 0, bytes.Length);
+                    var json = Encoding.ASCII.GetString(bytes, 0, byteStream);
+                    ListenerReceivedMessageArgs.StreamMessage = json;
+                    (this as IObservable<ListenerReceivedMessageArgs>).Notify(ListenerReceivedMessageArgs);
+                }
+                catch (Exception)
+                {
+                    //TODO: Find the problem
+                    Debug.Log("Something goes wrong with that code block");
+                }
             }
         }
 

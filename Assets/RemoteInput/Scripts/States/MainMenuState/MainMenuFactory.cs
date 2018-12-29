@@ -34,9 +34,10 @@ namespace RemoteInput.Core
 
         public MainMenuView CreateView()
         {
-            var resourceName = RemoteInputController.Instance.Mode == RemoteControllerMode.Host 
-                ? "MainMenu/MainMenuHostView"
-                : "MainMenu/MainMenuControllerView";
+            if (RemoteInputController.Instance.Mode == RemoteControllerMode.Host)
+                return null;
+
+            var resourceName = "MainMenu/MainMenuControllerView";
             var viewPrefab = Resources.Load<GameObject>(resourceName);
             return Object.Instantiate(viewPrefab).GetComponent<MainMenuView>();
         }

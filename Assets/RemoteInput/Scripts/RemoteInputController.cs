@@ -28,6 +28,7 @@ namespace RemoteInput.Core
         }
 
         public static RemoteInputController Instance { get; private set; }
+        public string LocalEndPoint { get; private set; }
 
         private NetworkController _networkController;
         private StateController _stateController;
@@ -90,6 +91,15 @@ namespace RemoteInput.Core
 
         #endregion Unity Methods
 
+        #region Public Methods
+
+        public void Listen()
+        {
+            _networkController.Listen();
+        }
+
+        #endregion //Public Methods
+
         #region Private Methods
 
         private void SubscribeEvents()
@@ -116,6 +126,8 @@ namespace RemoteInput.Core
 
         void IObserver<ListenerStartedArgs>.OnNotified(object sender, ListenerStartedArgs eventArgs)
         {
+            LocalEndPoint = eventArgs.LocalEndPoint;
+
             if (ReadyForConnection != null)
             {
                 ReadyForConnection.Invoke(this, eventArgs);

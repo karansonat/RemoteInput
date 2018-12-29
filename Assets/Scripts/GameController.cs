@@ -1,21 +1,16 @@
-﻿using MalbersAnimations;
-using RemoteInput.Core;
-using RemoteInput.Core.Network;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Game.Core
 {
-    public class GameController : MonoBehaviour
+    public class GameController : MonoBehaviour, IObserver<BeginMappingButtonPressedArgs>,
+                                                 IObserver<EndMappingButtonPressedArgs>
     {
         #region Fields
 
         public static GameController Instance { get; private set; }
 
-        [SerializeField] private RemoteInputController _inputController;
-        [SerializeField] private Animal _dragon;
-
-        private GamePad _gamepad;
-        private FollowCameraController _followCameraController;
+        private StateController _stateController;
+        private SpatialMappingController _spatialMappingController;
 
         #endregion //Fields
 
@@ -41,51 +36,31 @@ namespace Game.Core
 
         private void Start()
         {
-            if (_inputController.Mode == RemoteControllerMode.Host)
-            {
-                SubscribeHostEvents();
-                ConfigureFollowCamera();
-                _dragon.Speed2 = true;
-            }
+            InitializeSpatialMappingController();
+            InitializeStateController();
         }
 
         private void FixedUpdate()
         {
-            if (_dragon != null && _gamepad != null)
-            {
-                _dragon.Move(_gamepad.InputVector);
-
-                if (_followCameraController != null)
-                    _followCameraController.Follow();
-            }
+            if (_stateController != null)
+                (_stateController as IMonoNotification).FixedUpdate();
         }
 
         private void Update()
         {
-            if (_gamepad == null)
-                return;
+            if (_stateController != null)
+                (_stateController as IMonoNotification).Update();
+        }
 
-            if (_gamepad.ButtonA)
-            {
-                _dragon.SetJump();
-            }
-
-            if (_gamepad.ButtonB)
-            {
-                _dragon.SetAttack();
-            }
+        void LateUpdate()
+        {
+            if (_stateController != null)
+                (_stateController as IMonoNotification).LateUpdate();
         }
 
         #endregion //Unity Methods
 
         #region Private Methods
-
-        private void SubscribeHostEvents()
-        {
-            _inputController.ReadyForConnection += RemoteInputController_ReadyForConnection;
-            _inputController.ControllerConnected += RemoteInputController_ControllerConnected;
-            _inputController.InputDataReceived += _inputController_InputDataReceived;
-        }
 
         private void ApplyApplicationConfiguration()
         {
@@ -93,29 +68,37 @@ namespace Game.Core
             Application.targetFrameRate = 60;
         }
 
-        private void ConfigureFollowCamera()
+        private void InitializeStateController()
         {
-            _followCameraController = FollowCameraFactory.Instance.CreateController();
-            _followCameraController.Initialize(_dragon.transform, Camera.main.transform);
+            _stateController = new StateController();
+
+            (_stateController as IObservable<BeginMappingButtonPressedArgs>).Attach(this);
+            (_stateController as IObservable<EndMappingButtonPressedArgs>).Attach(this);
+
+            _stateController.Init();
+        }
+
+        private void InitializeSpatialMappingController()
+        {
+            var model = SpatialMappingFactory.Instance.CreateModel();
+            _spatialMappingController = SpatialMappingFactory.Instance.CreateController();
+            _spatialMappingController.Init(model.TrianglesPerCubicMeter, model.TimeBetweenUpdates);
         }
 
         #endregion //Private Methods
 
-        #region RemoteInputController Host Events
+        #region IObserver Interface
 
-        private void RemoteInputController_ReadyForConnection(object sender, ListenerStartedArgs e)
+        void IObserver<BeginMappingButtonPressedArgs>.OnNotified(object sender, BeginMappingButtonPressedArgs eventArgs)
         {
+            _spatialMappingController.BeginScanning();
         }
 
-        private void RemoteInputController_ControllerConnected(object sender, ListenerAcceptedClientArgs e)
+        void IObserver<EndMappingButtonPressedArgs>.OnNotified(object sender, EndMappingButtonPressedArgs eventArgs)
         {
+            _spatialMappingController.EndScanning();
         }
 
-        private void _inputController_InputDataReceived(object sender, InputDataReceivedArgs e)
-        {
-            _gamepad = e.GamePadData;
-        }
-
-        #endregion //RemoteInputController Host Events
+        #endregion //IObserver Interface
     }
 }
