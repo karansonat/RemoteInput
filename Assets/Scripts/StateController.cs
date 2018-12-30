@@ -76,7 +76,8 @@ namespace Game.Core
                     var preperationView = PreperationFactory.Instance.CreateView();
                     _activeState = PreperationFactory.Instance.CreateController(preperationModel, preperationView);
 
-                    preperationView.transform.SetParent(Camera.main.transform);
+                    preperationView.transform.SetParent(Camera.main.transform, false);
+                    preperationView.transform.localEulerAngles = Vector3.zero;
                     preperationView.transform.localPosition = new Vector3(0, 0, 2);
 
                     (_activeState as IObservable<BeginMappingButtonPressedArgs>).Attach(this);
@@ -88,7 +89,8 @@ namespace Game.Core
                     var gameView = GameFactory.Instance.CreateView();
                     _activeState = GameFactory.Instance.CreateController(gameModel, gameView);
 
-                    gameView.transform.SetParent(Camera.main.transform);
+                    gameView.transform.SetParent(Camera.main.transform, false);
+                    gameView.transform.localEulerAngles = Vector3.zero;
                     gameView.transform.localPosition = new Vector3(0, 0, 2);
                     break;
             }
