@@ -68,10 +68,6 @@ namespace RemoteInput.Core
 
         private void Init()
         {
-#if !UNITY_EDITOR && (UNITY_IOS || UNITY_ANDROID)
-            Screen.orientation = ScreenOrientation.LandscapeLeft;
-#endif
-
             _model.Init();
             _view.Init();
 
@@ -82,7 +78,7 @@ namespace RemoteInput.Core
 
         private void UpdateGamePadParameters()
         {
-            _model.SetData(_view.InputVector, _view.ButtonAPressed, _view.ButtonBPressed);
+            _model.SetData(_view.InputVector, _view.ButtonAPressed);
             _gamePadParametersUpdatedArgs.GamePad = _model;
         }
 

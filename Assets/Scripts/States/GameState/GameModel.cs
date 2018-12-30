@@ -23,7 +23,7 @@ namespace Game.Core
 
             Debug.Log(_gamePad.InputVector.ToString());
 
-            _avatar.Move(_gamePad.InputVector);
+            _avatar.Move(_gamePad.InputVector, false);
         }
 
         void IMonoNotification.LateUpdate()
@@ -35,11 +35,23 @@ namespace Game.Core
             if (_gamePad == null || _avatar == null)
                 return;
 
-            if (_gamePad.ButtonA)
-                _avatar.SetJump();
+            UpdateAvatarFlyState();
 
-            if (_gamePad.ButtonB)
-                _avatar.SetAttack();
+            if (_gamePad.ButtonA)
+                _avatar.SetSecondaryAttack();
+        }
+
+        private void UpdateAvatarFlyState()
+        {
+            if (!_avatar.Fly && _gamePad.RotationRateUnbiased.y > 0.5f && _gamePad.Acceleration.y < -0.7f)
+            {
+                _avatar.Fly = true;
+            }
+
+            if (_avatar.Fly && _gamePad.RotationRateUnbiased.y < -0.5f && _gamePad.Acceleration.y > 0.7f)
+            {
+                _avatar.Fly = false;
+            }
         }
 
         #endregion //IMonoNotification Interface

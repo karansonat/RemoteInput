@@ -6,8 +6,8 @@ namespace RemoteInput.Core
     {
         #region Fields
 
-        [SerializeField] private Vector3 _eulerAngles;
-        public Vector3 EulerAngles { get { return _eulerAngles; } }
+        [SerializeField] private Vector3 _rotationRateUnbiased;
+        public Vector3 RotationRateUnbiased { get { return _rotationRateUnbiased; } }
         
         [SerializeField] private Vector3 _acceleration;
         public Vector3 Acceleration { get { return _acceleration; } }
@@ -17,9 +17,6 @@ namespace RemoteInput.Core
         
         [SerializeField] private bool _buttonA;
         public bool ButtonA { get { return _buttonA; } }
-        
-        [SerializeField] private bool _buttonB;
-        public bool ButtonB { get { return _buttonB; } }
 
         #endregion //Fields
 
@@ -30,22 +27,12 @@ namespace RemoteInput.Core
             Input.gyro.enabled = true;
         }
 
-        public void SetData(Vector3 inputVector, bool buttonA, bool buttonB)
+        public void SetData(Vector3 inputVector, bool buttonA)
         {
             RefreshSensorDatas();
 
             _inputVector = inputVector;
             _buttonA = buttonA;
-            _buttonB = buttonB;
-        }
-
-        public override string ToString()
-        {
-            return "InputVector: " + InputVector.ToString()
-                    + " - "
-                    + "Button A: " + (ButtonA ? "Pressed" : "")
-                    + " - "
-                    + "Button B: " + (ButtonB ? "Pressed" : "");
         }
 
         #endregion //Public Methods
@@ -54,7 +41,7 @@ namespace RemoteInput.Core
 
         private void RefreshSensorDatas()
         {
-            _eulerAngles = Input.gyro.attitude.eulerAngles;
+            _rotationRateUnbiased = Input.gyro.rotationRateUnbiased;
             _acceleration = Input.acceleration;
         }
 

@@ -10,12 +10,10 @@ namespace RemoteInput.Core
 
         [SerializeField] private VirtualJoystick _joystick;
         [SerializeField] private Button _buttonA;
-        [SerializeField] private Button _buttonB;
         [SerializeField] private Button _buttonDisconnect;
 
         public Vector3 InputVector { get; private set; }
         public bool ButtonAPressed { get; private set; }
-        public bool ButtonBPressed { get; private set; }
 
         private bool _initialized;
 
@@ -34,9 +32,6 @@ namespace RemoteInput.Core
             _buttonA.onClick.RemoveAllListeners();
             _buttonA.onClick.AddListener(OnButtonAPressed);
 
-            _buttonB.onClick.RemoveAllListeners();
-            _buttonB.onClick.AddListener(OnButtonBPressed);
-
             _buttonDisconnect.onClick.RemoveAllListeners();
             _buttonDisconnect.onClick.AddListener(OnButtonDisconnectPressed);
 
@@ -52,7 +47,6 @@ namespace RemoteInput.Core
         public void Reset()
         {
             ButtonAPressed = false;
-            ButtonBPressed = false;
         }
 
         #endregion //Public Methods
@@ -62,11 +56,6 @@ namespace RemoteInput.Core
         private void OnButtonAPressed()
         {
             ButtonAPressed = true;
-        }
-
-        private void OnButtonBPressed()
-        {
-            ButtonBPressed = true;
         }
 
         private void OnButtonDisconnectPressed()
